@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Cache files
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# Log files
+logs/
+*.log
+
+# Configuration files
+web_alert_store.db
+
+# Lock files
+uv.lock
