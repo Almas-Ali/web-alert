@@ -2,6 +2,8 @@
 
 A beautiful, easy-to-use desktop application that watches websites for you and plays a sound when something changes. Perfect for tracking price drops, news updates, stock availability, or any website content you care about!
 
+![Web Alert Dashboard](https://raw.githubusercontent.com/Almas-Ali/web-alert/main/screenshots/dashboard.png)
+
 ## ✨ Key Features
 
 ### 🎯 Easy to Use
