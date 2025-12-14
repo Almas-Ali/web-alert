@@ -14,6 +14,6 @@ draw.ellipse([22, 22, 42, 42], fill=(255, 255, 255, 255))
 draw.ellipse([42, 12, 54, 24], fill=(239, 68, 68, 255))
 
 # Save as PNG and ICO
-img.save('web_alert/icons/icon.png')
-img.save('web_alert/icons/icon.ico')
+img.save('../web_alert/icons/icon.png')
+img.save('../web_alert/icons/icon.ico')
 print("Icons created successfully!")
