@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import create_engine, desc, func, or_
 from sqlalchemy.orm import Session, sessionmaker
 
+from ..migrations import MigrationManager
 from ..models import ActiveJob, AppSettings, Base, Configuration
 
 logger = logging.getLogger(__name__)
@@ -37,11 +38,35 @@ class ConfigDatabase:
 
         # Create tables
         Base.metadata.create_all(self.engine)
+        
+        # Run migrations
+        self._run_migrations()
+        
         logger.info(f"Database initialized at {self.db_path}")
+    
+    def _run_migrations(self):
+        """Run all database migrations automatically from versions directory."""
+        try:
+            migration_manager = MigrationManager(self.engine)
+            
+            # Auto-discover and run all migrations from versions directory
+            migration_manager.run_migrations()
+            
+        except Exception as e:
+            logger.error(f"Error running migrations: {e}")
 
     def _get_session(self) -> Session:
         """Get a new database session."""
         return self.SessionLocal()
+
+    def close(self):
+        """Close database connections and dispose of the engine."""
+        try:
+            if hasattr(self, 'engine') and self.engine:
+                self.engine.dispose()
+                logger.info("Database connections closed")
+        except Exception as e:
+            logger.error(f"Error closing database: {e}")
 
     def save_config(self, config: Dict[str, Any], notes: str = "") -> int:
         """
@@ -72,6 +97,7 @@ class ConfigDatabase:
                 # Update existing configuration
                 existing.check_interval = config.get("check_interval", 60)
                 existing.alert_sound = config.get("alert_sound", "")
+                existing.tts_message = config.get("tts_message", "")
                 existing.timeout = config.get("timeout", 10)
                 existing.last_used = datetime.now()
                 existing.use_count += 1
@@ -89,6 +115,7 @@ class ConfigDatabase:
                     check_interval=config.get("check_interval", 60),
                     comparison_mode=config.get("comparison_mode", "text"),
                     alert_sound=config.get("alert_sound", ""),
+                    tts_message=config.get("tts_message", ""),
                     timeout=config.get("timeout", 10),
                     notes=notes,
                 )
@@ -350,6 +377,7 @@ class ConfigDatabase:
                 existing.check_interval = job_data["check_interval"]
                 existing.comparison_mode = job_data["comparison_mode"]
                 existing.alert_sound = job_data.get("alert_sound", "")
+                existing.tts_message = job_data.get("tts_message", "")
                 existing.timeout = job_data.get("timeout", 10)
                 existing.notes = job_data.get("notes", "")
             else:
@@ -361,6 +389,7 @@ class ConfigDatabase:
                     check_interval=job_data["check_interval"],
                     comparison_mode=job_data["comparison_mode"],
                     alert_sound=job_data.get("alert_sound", ""),
+                    tts_message=job_data.get("tts_message", ""),
                     timeout=job_data.get("timeout", 10),
                     notes=job_data.get("notes", ""),
                 )

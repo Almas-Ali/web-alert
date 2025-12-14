@@ -21,6 +21,7 @@ A beautiful, easy-to-use desktop application that watches websites for you and p
 ### 🎨 Personalization
 - **Light & Dark Themes** - Choose the look that suits you best
 - **Custom Alert Sounds** - Use the built-in sound or upload your own
+- **Text-to-Speech Alerts** - Add custom spoken messages when changes are detected
 - **Your Settings Saved** - Theme and preferences saved automatically
 - **Configuration History** - Quickly reuse previous monitoring setups
 
@@ -182,6 +183,28 @@ Don't like the default beep?
 1. Click "Browse" next to Alert Sound
 2. Pick your own WAV sound file
 3. Or leave default for the built-in alert
+
+### 🔊 Text-to-Speech Alerts (New!)
+
+Want to hear a custom message when changes are detected?
+
+1. In the "Text-to-Speech Message" field, enter your custom message
+2. Examples:
+   - "Alert! The website has changed!"
+   - "Price drop detected on your item!"
+   - "New content available!"
+3. Leave it empty if you only want the sound alert
+
+**How it works:**
+- When a change is detected, the sound plays first
+- Then your custom message is spoken using text-to-speech
+- Works alongside the regular sound alert
+- No additional setup required!
+
+**Pro Tips:**
+- Keep messages short and clear for best results
+- The voice uses your system's default text-to-speech engine
+- You can test it by adding a monitor and triggering a change
 
 ## 🎨 Themes
 

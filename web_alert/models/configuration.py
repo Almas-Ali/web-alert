@@ -19,6 +19,7 @@ class Configuration(Base):
     check_interval = Column(Integer, nullable=False)
     comparison_mode = Column(String, nullable=False)
     alert_sound = Column(String)
+    tts_message = Column(String)
     timeout = Column(Integer)
     created_at = Column(DateTime, default=datetime.now)
     last_used = Column(
@@ -36,6 +37,7 @@ class Configuration(Base):
             "check_interval": self.check_interval,
             "comparison_mode": self.comparison_mode,
             "alert_sound": self.alert_sound,
+            "tts_message": self.tts_message,
             "timeout": self.timeout,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "last_used": self.last_used.isoformat() if self.last_used else None,

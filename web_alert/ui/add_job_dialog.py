@@ -23,13 +23,13 @@ class AddJobDialog(ctk.CTkToplevel):
         self.result = None
 
         self.title("Add New Monitoring Job")
-        self.geometry("600x600")
+        self.geometry("600x700")
 
         # Center window
         self.update_idletasks()
         x = (self.winfo_screenwidth() // 2) - 300
-        y = (self.winfo_screenheight() // 2) - 300
-        self.geometry(f"600x600+{x}+{y}")
+        y = (self.winfo_screenheight() // 2) - 350
+        self.geometry(f"600x700+{x}+{y}")
 
         self.transient(parent)
         self.grab_set()
@@ -115,20 +115,58 @@ class AddJobDialog(ctk.CTkToplevel):
         ).pack(side="left")
 
         # Alert Sound
-        ctk.CTkLabel(form_frame, text="Alert Sound (Optional)", anchor="w").pack(
-            fill="x", padx=10
-        )
+        ctk.CTkLabel(
+            form_frame,
+            text="Alert Sound (Optional)",
+            anchor="w",
+            font=ctk.CTkFont(size=12, weight="bold"),
+        ).pack(fill="x", padx=10, pady=(0, 3))
         sound_frame = ctk.CTkFrame(form_frame, fg_color="transparent")
-        sound_frame.pack(fill="x", padx=10, pady=(0, 10))
+        sound_frame.pack(fill="x", padx=10, pady=(0, 8))
 
         self.sound_entry = ctk.CTkEntry(
-            sound_frame, placeholder_text="Default system sound"
+            sound_frame,
+            placeholder_text="Default system sound",
+            height=32,
+            corner_radius=8,
+            border_width=2,
         )
         self.sound_entry.pack(side="left", fill="x", expand=True, padx=(0, 5))
 
         ctk.CTkButton(
-            sound_frame, text="Browse", width=80, command=self._browse_sound
+            sound_frame,
+            text="Browse",
+            width=80,
+            height=32,
+            command=self._browse_sound,
+            corner_radius=8,
         ).pack(side="left")
+
+        # TTS Message
+        ctk.CTkLabel(
+            form_frame,
+            text="🔊 Text-to-Speech Message (Optional)",
+            anchor="w",
+            font=ctk.CTkFont(size=12, weight="bold"),
+        ).pack(fill="x", padx=10, pady=(0, 3))
+        
+        tts_info = ctk.CTkLabel(
+            form_frame,
+            text="💡 This message will be spoken when a change is detected",
+            anchor="w",
+            font=ctk.CTkFont(size=10),
+            text_color=("gray50", "gray60"),
+        )
+        tts_info.pack(fill="x", padx=10, pady=(0, 3))
+        
+        self.tts_entry = ctk.CTkEntry(
+            form_frame,
+            placeholder_text="e.g., 'Alert! Website has changed'",
+            height=32,
+            corner_radius=8,
+            border_width=2,
+        )
+        self.tts_entry.pack(fill="x", padx=10, pady=(0, 8))
 
         # Load from history button
         ctk.CTkButton(
@@ -229,6 +267,10 @@ class AddJobDialog(ctk.CTkToplevel):
         if config.get("alert_sound"):
             self.sound_entry.delete(0, "end")
             self.sound_entry.insert(0, config["alert_sound"])
+        
+        if config.get("tts_message"):
+            self.tts_entry.delete(0, "end")
+            self.tts_entry.insert(0, config["tts_message"])
 
         window.destroy()
 
@@ -260,6 +302,7 @@ class AddJobDialog(ctk.CTkToplevel):
             "check_interval": interval,
             "comparison_mode": self.mode_var.get(),
             "alert_sound": self.sound_entry.get().strip(),
+            "tts_message": self.tts_entry.get().strip(),
             "timeout": 10,
         }
 
