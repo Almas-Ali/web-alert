@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "web-alert"
-version = "1.0.0"
+dynamic = ["version"]
 description = "Modern web monitoring and alert system with customizable GUI for tracking website changes"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -55,6 +55,9 @@ Documentation = "https://github.com/Almas-Ali/web-alert#readme"
 
 [project.scripts]
 web-alert = "web_alert.dashboard:main"
+
+[tool.hatch.version]
+path = "web_alert/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["web_alert"]

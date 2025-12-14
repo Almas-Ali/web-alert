@@ -1,6 +1,5 @@
 """Streamlined dashboard using modular components."""
 
-import logging
 import time
 import tkinter as tk
 from pathlib import Path
@@ -8,6 +7,7 @@ from tkinter import messagebox
 
 import customtkinter as ctk
 
+from .. import __version__
 from ..config import ConfigManager
 from ..core import MonitorJob
 from ..data import ConfigDatabase
@@ -656,8 +656,8 @@ class WebAlertDashboard:
 
     def _show_about(self):
         """Show about dialog."""
-        about_text = """
-Web Alert v2.0.0
+        about_text = f"""
+Web Alert v{__version__}
 
 A modern web monitoring application that monitors
 multiple websites simultaneously and alerts you
