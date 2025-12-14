@@ -251,17 +251,17 @@ class WebAlertDashboard:
         self.jobs_frame.pack(fill="both", expand=True)
 
         # Empty state
-        empty_container = ctk.CTkFrame(
+        self.empty_container = ctk.CTkFrame(
             self.jobs_frame,
             fg_color=self.colors["card_bg"],
             corner_radius=15,
             border_width=1,
             border_color=self.colors["border"],
         )
-        empty_container.pack(pady=20, padx=10)
+        self.empty_container.pack(pady=20, padx=10)
 
         self.empty_label = ctk.CTkLabel(
-            empty_container,
+            self.empty_container,
             text="📭 No monitoring jobs yet\n\nClick 'Add' to start monitoring websites!",
             font=ctk.CTkFont(size=14),
             text_color=("gray40", "gray70"),
@@ -277,9 +277,9 @@ class WebAlertDashboard:
         saved_jobs = self.job_manager.load_saved_jobs()
 
         if saved_jobs:
-            # Hide empty label when loading saved jobs
-            if self.empty_label.winfo_viewable():
-                self.empty_label.pack_forget()
+            # Hide empty state when loading saved jobs
+            if self.empty_container.winfo_viewable():
+                self.empty_container.pack_forget()
 
             for job_data in saved_jobs:
                 job_id, job = self.job_manager.create_job(job_data, saved=True)
@@ -294,9 +294,9 @@ class WebAlertDashboard:
         job_id, job = self.job_manager.create_job(config)
         self._create_job_widget(job)
 
-        # Hide empty label if visible
-        if self.empty_label.winfo_viewable():
-            self.empty_label.pack_forget()
+        # Hide empty state if visible
+        if self.empty_container.winfo_viewable():
+            self.empty_container.pack_forget()
 
     def _create_job_widget(self, job: MonitorJob):
         """Create widget for a monitoring job."""
@@ -481,9 +481,9 @@ class WebAlertDashboard:
         # Remove job
         self.job_manager.remove_job(job_id)
 
-        # Show empty label if no jobs
+        # Show empty state if no jobs
         if not self.job_manager.get_all_jobs():
-            self.empty_label.pack(pady=50)
+            self.empty_container.pack(pady=20, padx=10)
 
     def _view_job_logs(self, job_id: str):
         """View logs for a specific job."""
