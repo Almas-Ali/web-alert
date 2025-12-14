@@ -1,5 +1,6 @@
 """Add Job Dialog."""
 
+from pathlib import Path
 from tkinter import filedialog, messagebox
 
 import customtkinter as ctk
@@ -201,8 +202,21 @@ class AddJobDialog(ctk.CTkToplevel):
 
     def _browse_sound(self):
         """Browse for sound file."""
+        # Get current value from entry
+        current_value = self.sound_entry.get().strip()
+        
+        # Determine initial directory
+        if current_value and Path(current_value).exists() and Path(current_value).is_file():
+            # Use directory of current file
+            initial_dir = str(Path(current_value).parent)
+        else:
+            # Use sounds folder as default
+            sounds_dir = Path(__file__).parent.parent / "sounds"
+            initial_dir = str(sounds_dir) if sounds_dir.exists() else "."
+        
         filename = filedialog.askopenfilename(
             title="Select Alert Sound",
+            initialdir=initial_dir,
             filetypes=[("WAV files", "*.wav"), ("All files", "*.*")],
         )
         if filename:
