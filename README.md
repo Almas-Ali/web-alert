@@ -30,29 +30,43 @@ A beautiful, easy-to-use desktop application that watches websites for you and p
 
 ## 📥 Installation
 
-1. **Download** this application to your computer
-2. **Install Python** if you don't have it:
-   - Visit [python.org](https://www.python.org/downloads/)
-   - Download Python 3.13 or newer
-   - During installation, check "Add Python to PATH"
+### Super Easy Installation (Recommended)
 
-3. **Install the app** by opening a terminal/command prompt and typing:
-   ```bash
-   pip install -e .
-   ```
+**Just one command!** Open a terminal/command prompt and type:
 
-That's it! The app will install everything it needs automatically.
-
-### For Technical Users
-
-Using uv (recommended):
 ```bash
-uv sync
-uv run main.py
+pip install web-alert
 ```
 
-Or with pip:
+That's it! The app and all its requirements install automatically. ✨
+
+### First Time Using Python?
+
+If you don't have Python yet:
+
+1. **Install Python**:
+   - Visit [python.org](https://www.python.org/downloads/)
+   - Download Python 3.10 or newer
+   - ⚠️ **Important**: During installation, check "Add Python to PATH"
+
+2. **Install Web Alert**:
+   ```bash
+   pip install web-alert
+   ```
+
+### For Developers
+
+Want to modify the code? Clone the repository:
+
 ```bash
+git clone https://github.com/Almas-Ali/web-alert.git
+cd web-alert
+
+# Using uv (recommended)
+uv sync
+uv run main.py
+
+# Or with pip
 pip install -e .
 python main.py
 ```
@@ -61,12 +75,15 @@ python main.py
 
 ### Starting the Application
 
-**Windows**: Double-click `main.py` or run:
+After installation, simply run:
+
 ```bash
-python main.py
+web-alert
 ```
 
 The dashboard will open with a beautiful purple header and a clean interface.
+
+**That's it!** No need to navigate to any folder or run Python directly. The `web-alert` command works from anywhere! 🎉
 
 ### Your First Monitor in 3 Steps
 
@@ -319,7 +336,11 @@ Created with ❤️ for anyone who needs to track website changes without consta
 ---
 
 ### Ready to Start?
-1. Follow the installation steps above
-2. Run the app
+1. Install: `pip install web-alert`
+2. Run: `web-alert`
 3. Add your first monitor
 4. Sit back and let it watch for you! 🎉
+
+---
+
+**Installation troubleshooting?** Check the [Common Issues](#-common-issues--solutions) section above.
