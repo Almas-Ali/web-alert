@@ -19,6 +19,7 @@ class ActiveJob(Base):
     check_interval = Column(Integer, nullable=False)
     comparison_mode = Column(String, nullable=False)
     alert_sound = Column(String)
+    tts_message = Column(String)
     timeout = Column(Integer)
     notes = Column(Text)
     created_at = Column(DateTime, default=datetime.now)
@@ -32,6 +33,7 @@ class ActiveJob(Base):
             "check_interval": self.check_interval,
             "comparison_mode": self.comparison_mode,
             "alert_sound": self.alert_sound,
+            "tts_message": self.tts_message,
             "timeout": self.timeout,
             "notes": self.notes,
         }

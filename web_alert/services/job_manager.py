@@ -44,6 +44,7 @@ class JobManager:
             check_interval=config["check_interval"],
             comparison_mode=config["comparison_mode"],
             alert_sound=config.get("alert_sound", ""),
+            tts_message=config.get("tts_message", ""),
             timeout=config.get("timeout", 10),
             notes=config.get("notes", ""),
         )
@@ -88,11 +89,13 @@ class JobManager:
         logger.info(f"Started job {job_id}")
         return True
 
-    def stop_job(self, job_id: str) -> bool:
+    def stop_job(self, job_id: str, wait: bool = False, timeout: float = 2.0) -> bool:
         """Stop monitoring a specific job.
 
         Args:
             job_id: ID of the job to stop
+            wait: If True, wait for the thread to finish
+            timeout: Maximum time to wait for thread to finish
 
         Returns:
             True if job was stopped, False otherwise
@@ -102,6 +105,13 @@ class JobManager:
 
         job = self.jobs[job_id]
         job.stop()
+        
+        # Wait for thread to finish if requested
+        if wait and job.thread and job.thread.is_alive():
+            logger.info(f"Waiting for job {job_id} thread to finish...")
+            job.thread.join(timeout=timeout)
+            if job.thread.is_alive():
+                logger.warning(f"Job {job_id} thread did not finish within {timeout}s")
 
         logger.info(f"Stopped job {job_id}")
         return True
@@ -162,11 +172,16 @@ class JobManager:
             if not self.jobs[job_id].is_running:
                 self.start_job(job_id, monitor_callback)
 
-    def stop_all_jobs(self):
-        """Stop all jobs."""
+    def stop_all_jobs(self, wait: bool = True, timeout: float = 2.0):
+        """Stop all jobs.
+        
+        Args:
+            wait: If True, wait for threads to finish
+            timeout: Maximum time to wait per thread
+        """
         for job_id in list(self.jobs.keys()):
             if self.jobs[job_id].is_running:
-                self.stop_job(job_id)
+                self.stop_job(job_id, wait=wait, timeout=timeout)
 
     def load_saved_jobs(self) -> list:
         """Load jobs from database that were active when app closed.

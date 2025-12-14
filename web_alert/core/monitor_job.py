@@ -20,6 +20,7 @@ class MonitorJob:
     check_interval: int = 60
     comparison_mode: str = "text"
     alert_sound: str = ""
+    tts_message: str = ""
     timeout: int = 10
 
     # Runtime state
@@ -43,9 +44,20 @@ class MonitorJob:
 
     def start(self):
         """Initialize components for this job."""
+        import logging
+        logger = logging.getLogger(__name__)
+        
         self.scraper = WebScraper(timeout=self.timeout)
         self.detector = ChangeDetector(comparison_mode=self.comparison_mode)
-        self.alerter = Alerter(self.alert_sound if self.alert_sound else None)
+        
+        # Debug logging for TTS - use empty string as fallback
+        tts_msg = self.tts_message if self.tts_message else ""
+        logger.info(f"Job {self.id} starting with TTS message: '{tts_msg}'")
+        
+        self.alerter = Alerter(
+            self.alert_sound if self.alert_sound else None,
+            tts_msg if tts_msg else None
+        )
         self.is_running = True
         self.status = "Running"
         self.status_color = "#2ecc71"
@@ -89,6 +101,7 @@ class MonitorJob:
             "check_interval": self.check_interval,
             "comparison_mode": self.comparison_mode,
             "alert_sound": self.alert_sound,
+            "tts_message": self.tts_message,
             "timeout": self.timeout,
             "notes": self.notes,
         }

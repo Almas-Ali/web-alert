@@ -1,4 +1,4 @@
-"""Add Job Dialog."""
+"""Edit Job Dialog."""
 
 from pathlib import Path
 from tkinter import filedialog, messagebox
@@ -6,24 +6,26 @@ from tkinter import filedialog, messagebox
 import customtkinter as ctk
 
 
-class AddJobDialog(ctk.CTkToplevel):
-    """Dialog for adding a new monitoring job."""
+class EditJobDialog(ctk.CTkToplevel):
+    """Dialog for editing an existing monitoring job."""
 
-    def __init__(self, parent, db, callback):
-        """Initialize the add job dialog.
+    def __init__(self, parent, db, job, callback):
+        """Initialize the edit job dialog.
 
         Args:
             parent: Parent window
             db: ConfigDatabase instance
-            callback: Callback function to call when job is added
+            job: MonitorJob instance to edit
+            callback: Callback function to call when job is updated
         """
         super().__init__(parent)
 
         self.db = db
+        self.job = job
         self.callback = callback
         self.result = None
 
-        self.title("Add New Monitoring Job")
+        self.title("Edit Monitoring Job")
         self.geometry("600x700")
 
         # Center window
@@ -40,12 +42,12 @@ class AddJobDialog(ctk.CTkToplevel):
     def _create_widgets(self):
         """Create dialog widgets."""
         # Modern header
-        header = ctk.CTkFrame(self, fg_color=("#6C63FF", "#6C63FF"), corner_radius=0)
+        header = ctk.CTkFrame(self, fg_color=("#8B5CF6", "#8B5CF6"), corner_radius=0)
         header.pack(fill="x", pady=(0, 15))
 
         ctk.CTkLabel(
             header,
-            text="➕ Add New Monitoring Job",
+            text="✏️ Edit Monitoring Job",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="white",
         ).pack(pady=15, padx=15)
@@ -68,6 +70,7 @@ class AddJobDialog(ctk.CTkToplevel):
             corner_radius=8,
             border_width=2,
         )
+        self.url_entry.insert(0, self.job.url)
         self.url_entry.pack(fill="x", padx=10, pady=(0, 8))
 
         # CSS Selector
@@ -84,6 +87,7 @@ class AddJobDialog(ctk.CTkToplevel):
             corner_radius=8,
             border_width=2,
         )
+        self.selector_entry.insert(0, self.job.selector or "")
         self.selector_entry.pack(fill="x", padx=10, pady=(0, 8))
 
         # Check Interval
@@ -100,14 +104,17 @@ class AddJobDialog(ctk.CTkToplevel):
             corner_radius=8,
             border_width=2,
         )
-        self.interval_entry.insert(0, "60")
+        self.interval_entry.insert(0, str(self.job.check_interval))
         self.interval_entry.pack(fill="x", padx=10, pady=(0, 8))
 
         # Comparison Mode
-        ctk.CTkLabel(form_frame, text="Comparison Mode", anchor="w").pack(
-            fill="x", padx=10
-        )
-        self.mode_var = ctk.StringVar(value="text")
+        ctk.CTkLabel(
+            form_frame,
+            text="Comparison Mode",
+            anchor="w",
+            font=ctk.CTkFont(size=12, weight="bold"),
+        ).pack(fill="x", padx=10, pady=(0, 3))
+        self.mode_var = ctk.StringVar(value=self.job.comparison_mode)
         mode_frame = ctk.CTkFrame(form_frame, fg_color="transparent")
         mode_frame.pack(fill="x", padx=10, pady=(0, 10))
 
@@ -132,6 +139,7 @@ class AddJobDialog(ctk.CTkToplevel):
             corner_radius=8,
             border_width=2,
         )
+        self.sound_entry.insert(0, self.job.alert_sound or "")
         self.sound_entry.pack(side="left", fill="x", expand=True, padx=(0, 5))
 
         ctk.CTkButton(
@@ -167,16 +175,24 @@ class AddJobDialog(ctk.CTkToplevel):
             corner_radius=8,
             border_width=2,
         )
+        self.tts_entry.insert(0, self.job.tts_message or "")
         self.tts_entry.pack(fill="x", padx=10, pady=(0, 8))
 
-        # Load from history button
-        ctk.CTkButton(
+        # Notes
+        ctk.CTkLabel(
             form_frame,
-            text="📜 Load from History",
-            command=self._load_from_history,
-            fg_color="#3498db",
-            hover_color="#2980b9",
-        ).pack(pady=10)
+            text="Notes (Optional)",
+            anchor="w",
+            font=ctk.CTkFont(size=12, weight="bold"),
+        ).pack(fill="x", padx=10, pady=(0, 3))
+        self.notes_entry = ctk.CTkTextbox(
+            form_frame,
+            height=60,
+            corner_radius=8,
+            border_width=2,
+        )
+        self.notes_entry.insert("1.0", self.job.notes or "")
+        self.notes_entry.pack(fill="x", padx=10, pady=(0, 8))
 
         # Buttons
         button_frame = ctk.CTkFrame(self)
@@ -184,10 +200,10 @@ class AddJobDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             button_frame,
-            text="Add Job",
-            command=self._add_job,
-            fg_color="#2ecc71",
-            hover_color="#27ae60",
+            text="Save Changes",
+            command=self._save_changes,
+            fg_color="#10B981",
+            hover_color="#059669",
             width=150,
         ).pack(side="left", padx=5)
 
@@ -223,73 +239,8 @@ class AddJobDialog(ctk.CTkToplevel):
             self.sound_entry.delete(0, "end")
             self.sound_entry.insert(0, filename)
 
-    def _load_from_history(self):
-        """Load configuration from history."""
-        configs = self.db.get_recent_configs(20)
-
-        if not configs:
-            messagebox.showinfo("No History", "No configurations found in history.")
-            return
-
-        # Create selection window
-        select_window = ctk.CTkToplevel(self)
-        select_window.title("Select from History")
-        select_window.geometry("600x400")
-        select_window.transient(self)
-        select_window.grab_set()
-
-        ctk.CTkLabel(
-            select_window,
-            text="Select Configuration",
-            font=ctk.CTkFont(size=16, weight="bold"),
-        ).pack(pady=10)
-
-        scrollable = ctk.CTkScrollableFrame(select_window)
-        scrollable.pack(fill="both", expand=True, padx=10, pady=(0, 10))
-
-        for config in configs:
-            frame = ctk.CTkFrame(scrollable)
-            frame.pack(fill="x", pady=5, padx=5)
-
-            url_text = (
-                config["url"][:50] + "..." if len(config["url"]) > 50 else config["url"]
-            )
-            ctk.CTkLabel(frame, text=url_text, anchor="w").pack(
-                side="left", fill="x", expand=True, padx=10
-            )
-
-            ctk.CTkButton(
-                frame,
-                text="Load",
-                width=80,
-                command=lambda c=config: self._apply_config(c, select_window),
-            ).pack(side="right", padx=10, pady=5)
-
-    def _apply_config(self, config, window):
-        """Apply selected configuration."""
-        self.url_entry.delete(0, "end")
-        self.url_entry.insert(0, config["url"])
-
-        self.selector_entry.delete(0, "end")
-        self.selector_entry.insert(0, config.get("selector", ""))
-
-        self.interval_entry.delete(0, "end")
-        self.interval_entry.insert(0, str(config["check_interval"]))
-
-        self.mode_var.set(config["comparison_mode"])
-
-        if config.get("alert_sound"):
-            self.sound_entry.delete(0, "end")
-            self.sound_entry.insert(0, config["alert_sound"])
-        
-        if config.get("tts_message"):
-            self.tts_entry.delete(0, "end")
-            self.tts_entry.insert(0, config["tts_message"])
-
-        window.destroy()
-
-    def _add_job(self):
-        """Add the job and close dialog."""
+    def _save_changes(self):
+        """Save the changes and close dialog."""
         url = self.url_entry.get().strip()
 
         if not url:
@@ -310,7 +261,7 @@ class AddJobDialog(ctk.CTkToplevel):
             messagebox.showerror("Invalid Interval", str(e))
             return
 
-        self.result = {
+        config = {
             "url": url,
             "selector": self.selector_entry.get().strip(),
             "check_interval": interval,
@@ -320,8 +271,12 @@ class AddJobDialog(ctk.CTkToplevel):
             "timeout": 10,
         }
 
-        # Save to database
-        self.db.save_config(self.result)
+        # Update notes
+        notes = self.notes_entry.get("1.0", "end-1c").strip()
+        self.job.notes = notes
 
-        self.callback(self.result)
+        # Save to database configuration history
+        self.db.save_config(config)
+
+        self.callback(self.job.id, config)
         self.destroy()

@@ -21,6 +21,8 @@ A beautiful, easy-to-use desktop application that watches websites for you and p
 ### 🎨 Personalization
 - **Light & Dark Themes** - Choose the look that suits you best
 - **Custom Alert Sounds** - Use the built-in sound or upload your own
+- **Text-to-Speech Alerts** - Add custom spoken messages when changes are detected
+- **Edit Job Configurations** - Modify monitoring settings anytime without recreating
 - **Your Settings Saved** - Theme and preferences saved automatically
 - **Configuration History** - Quickly reuse previous monitoring setups
 
@@ -116,8 +118,9 @@ That's it! 🎉
 **For Each Website:**
 - **Green "Start" button** - Begin checking this website
 - **Red "Stop" button** - Pause checking (appears when running)
-- **Blue "Logs" button** - View activity history and add notes
-- **Gray "Remove" button** - Delete this monitor
+- **📋 Logs button** - View activity history and add notes (hover for tooltip)
+- **✏️ Edit button** - Modify job settings without recreating (hover for tooltip)
+- **🗑️ Remove button** - Delete this monitor (hover for tooltip)
 
 **Menu Bar:**
 - **File** → Quick access to add/start/stop operations
@@ -182,6 +185,54 @@ Don't like the default beep?
 1. Click "Browse" next to Alert Sound
 2. Pick your own WAV sound file
 3. Or leave default for the built-in alert
+
+### 🔊 Text-to-Speech Alerts
+
+Want to hear a custom message when changes are detected?
+
+1. In the "Text-to-Speech Message" field, enter your custom message
+2. Examples:
+   - "Alert! The website has changed!"
+   - "Price drop detected on your item!"
+   - "New content available!"
+3. Leave it empty if you only want the sound alert
+
+**How it works:**
+- If TTS message is configured: Only your spoken message plays (no sound)
+- If TTS is empty: Regular sound alert plays instead
+- They work exclusively to prevent audio overlap
+- No additional setup required!
+
+**Pro Tips:**
+- Keep messages short and clear for best results
+- The voice uses your system's default text-to-speech engine
+- Choose either TTS or sound - they don't play together
+
+### ✏️ Editing Jobs
+
+Need to change a job's settings? No need to delete and recreate!
+
+1. **Stop the job** if it's running (click the red "Stop" button)
+2. **Click the "✏️" edit button** (hover to see tooltip)
+3. **Modify any settings**:
+   - Change the URL
+   - Adjust check interval
+   - Update CSS selector
+   - Switch detection mode
+   - Change alert sound
+   - Update TTS message
+4. **Click "Save Changes"**
+
+**What you can edit:**
+- ✅ Website URL
+- ✅ CSS Selector
+- ✅ Check Interval
+- ✅ Comparison Mode
+- ✅ Alert Sound
+- ✅ TTS Message
+- ✅ Job Notes
+
+**Note:** Jobs must be stopped before editing to prevent conflicts.
 
 ## 🎨 Themes
 
@@ -262,16 +313,17 @@ Here are some real-world examples:
 
 To run this app, you need:
 - **Operating System**: Windows (7, 10, or 11)
-- **Python**: Version 3.8 or newer
+- **Python**: Version 3.10 or newer
 - **Internet**: Active connection to check websites
-- **Sound**: Speakers or headphones for alerts
+- **Sound**: Speakers or headphones for alerts (or use TTS instead)
 
 ## 🆘 Common Issues & Solutions
 
 ### "I'm not hearing any alerts!"
 **Solutions:**
 - ✅ Make sure your computer sound is turned on
-- ✅ Click the "Test Sound" button to check if it works
+- ✅ Check if you configured TTS message (it replaces sound)
+- ✅ Try using TTS message instead of sound alert
 - ✅ Try using the default alert (leave sound path empty)
 - ✅ Check if your speakers/headphones are connected
 

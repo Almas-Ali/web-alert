@@ -45,6 +45,8 @@ dependencies = [
     "beautifulsoup4>=4.12.0",
     "lxml>=4.9.0",
     "sqlalchemy>=2.0.0",
+    "pyttsx3>=2.90",
+    "pywin32>=311; sys_platform == 'win32'",
 ]
 
 [project.urls]
@@ -69,3 +71,6 @@ include = [
     "/README.md",
     "/LICENSE",
 ]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"web_alert/icons" = "web_alert/icons"
