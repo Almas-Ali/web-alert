@@ -1,147 +1,217 @@
 # Web Alert 🔔
 
-A modern dashboard application that monitors multiple websites simultaneously and alerts you with sound when changes are detected.
+A beautiful, easy-to-use desktop application that watches websites for you and plays a sound when something changes. Perfect for tracking price drops, news updates, stock availability, or any website content you care about!
 
-## Features
+## ✨ Key Features
 
-✨ **Dashboard Interface** - Manage multiple monitoring jobs from a single dashboard
-🔄 **Parallel Monitoring** - Monitor multiple URLs simultaneously in separate threads
-🔍 **Smart Change Detection** - Multiple comparison modes (text, HTML, hash)
-🎯 **Flexible Monitoring** - Monitor entire pages or specific elements using CSS selectors
-🔊 **Sound Alerts** - Customizable alert sounds with built-in default
-⚙️ **Per-Job Configuration** - Each job has its own settings and intervals
-📜 **Configuration History** - SQLAlchemy ORM database stores all configurations
-📊 **Real-time Status** - Live status for each monitoring job
-➕ **Easy Job Management** - Add, start, stop, and remove jobs on the fly
-🕐 **Independent Intervals** - Each job runs on its own schedule
-🔎 **History Integration** - Load previous configurations as new jobs
+### 🎯 Easy to Use
+- **Beautiful Dashboard** - Clean, modern interface that anyone can use
+- **Multiple Monitors** - Watch as many websites as you want at the same time
+- **One-Click Control** - Start, stop, or remove monitors with a single click
+- **Remembers Everything** - Your monitors stay saved even after you close the app
 
-## Installation
+### 🔍 Smart Monitoring
+- **Whole Page or Specific Parts** - Watch entire pages or just the parts you care about
+- **Three Detection Modes** - Choose how to detect changes (simple text, full page, or fast)
+- **Custom Schedules** - Set how often each website should be checked (every minute, hour, etc.)
+- **Real-Time Status** - See exactly what's happening with each monitor
 
-1. **Clone or download this repository**
+### 🎨 Personalization
+- **Light & Dark Themes** - Choose the look that suits you best
+- **Custom Alert Sounds** - Use the built-in sound or upload your own
+- **Your Settings Saved** - Theme and preferences saved automatically
+- **Configuration History** - Quickly reuse previous monitoring setups
 
-2. **Install dependencies:**
+### 📊 Activity Tracking
+- **Individual Logs** - Each monitor has its own activity history
+- **Export Logs** - Save logs to review later
+- **Add Notes** - Keep track of why you're monitoring each site
+- **Statistics** - See how many changes detected and alerts played
+
+## 📥 Installation
+
+1. **Download** this application to your computer
+2. **Install Python** if you don't have it:
+   - Visit [python.org](https://www.python.org/downloads/)
+   - Download Python 3.13 or newer
+   - During installation, check "Add Python to PATH"
+
+3. **Install the app** by opening a terminal/command prompt and typing:
    ```bash
    pip install -e .
    ```
 
-   Or install manually:
-   ```bash
-   pip install customtkinter requests beautifulsoup4 lxml
-   ```
+That's it! The app will install everything it needs automatically.
 
-## Usage
+### For Technical Users
 
-### Running the Application
+Using uv (recommended):
+```bash
+uv sync
+uv run main.py
+```
 
-Simply run:
+Or with pip:
+```bash
+pip install -e .
+python main.py
+```
+
+## 🚀 Getting Started
+
+### Starting the Application
+
+**Windows**: Double-click `main.py` or run:
 ```bash
 python main.py
 ```
 
-Or use the installed command:
-```bash
-web-alert
-```
+The dashboard will open with a beautiful purple header and a clean interface.
 
-### Quick Start Guide
+### Your First Monitor in 3 Steps
 
-1. **Launch the Dashboard**: Run the application to see the dashboard
-2. **Add New Job**: Click "➕ Add New Job" button
-3. **Configure Job Settings**:
-   - Enter URL to monitor
-   - (Optional) CSS Selector for specific elements
-   - Set check interval in seconds
-   - Choose comparison mode (text/HTML/hash)
-   - (Optional) Select custom alert sound
-4. **Start Monitoring**: Click "▶ Start" on the job
-5. **Add More Jobs**: Repeat to monitor multiple URLs simultaneously
-6. **Get Alerted**: Each job alerts independently when changes are detected
+#### Step 1: Add a Website to Monitor
+1. Click the **"+ Add"** button in the top right
+2. A window opens - enter the website URL (e.g., `https://example.com/product`)
+3. Leave other settings as default for now
+4. Click **"Add Job"**
 
-### Dashboard Features
+#### Step 2: Start Monitoring
+- Click the green **"▶ Start"** button next to your website
+- The status will change to "Running" (in green)
+- You'll see when it was last checked
 
-**Job Management:**
-- **Add New Job**: Create a new monitoring job with custom settings
-- **Start/Stop Individual Jobs**: Control each job independently
-- **Start/Stop All**: Batch control all jobs at once
-- **Remove Jobs**: Delete jobs you no longer need
-- **View Status**: See real-time status for each job
+#### Step 3: Get Alerted
+- When the website changes, you'll hear an alert sound
+- Check the "Logs" to see what changed and when
 
-**Using History:**
-- **Load from History**: When adding a job, click "📜 Load from History"
-- **Add from History**: In History menu, add previous configs as new jobs
-- **Auto-save**: All configurations are automatically saved to database
+That's it! 🎉
 
-## Configuration Options
+### Understanding the Dashboard
 
-### Comparison Modes
+**Top Buttons:**
+- **▶ Start** - Start monitoring all websites at once
+- **⏸ Stop** - Stop all monitoring
+- **+ Add** - Add a new website to monitor
 
-- **Text Mode**: Compares normalized text content (ignores formatting)
-- **HTML Mode**: Compares full HTML structure
-- **Hash Mode**: Fast comparison using content hashing
+**For Each Website:**
+- **Green "Start" button** - Begin checking this website
+- **Red "Stop" button** - Pause checking (appears when running)
+- **Blue "Logs" button** - View activity history and add notes
+- **Gray "Remove" button** - Delete this monitor
 
-### CSS Selectors
+**Menu Bar:**
+- **File** → Quick access to add/start/stop operations
+- **View** → Change between Light, Dark, or System theme
+- **History** → See and reuse previous monitoring setups
 
-Use CSS selectors to monitor specific parts of a webpage:
-- `#price` - Monitor element with ID "price"
-- `.product-title` - Monitor elements with class "product-title"
-- `div.content > p` - Monitor paragraphs inside div with class "content"
-- Leave empty to monitor the entire page
+### Using History (Save Time!)
 
-## Project Structure
+Previously monitored something? Load it again instantly:
 
-```
-web-alert/
-├── main.py                    # Entry point
-├── web_alert/
-│   ├── __init__.py
-│   ├── dashboard.py           # Dashboard GUI application (NEW)
-│   ├── gui.py                 # Legacy single-job GUI
-│   ├── monitor_job.py         # Job model for tracking monitors (NEW)
-│   ├── scraper.py             # Web scraping module
-│   ├── detector.py            # Change detection logic
-│   ├── alerter.py             # Sound alert system
-│   ├── config.py              # Configuration management (database-backed)
-│   ├── database.py            # SQLAlchemy ORM database (UPDATED)
-│   └── generate_sound.py      # Sound generation utility
-├── sounds/
-│   └── alert.wav              # Default alert sound
-├── logs/
-│   └── web_alert.log          # Application logs
-├── web_alert_store.db         # SQLite database (configurations + settings)
-├── pyproject.toml
-└── README.md
-```
+1. **While Adding**: Click "📜 Load from History" button
+2. **From Menu**: Go to History → View All History
+3. **Click "Add as Job"** - All settings restored automatically!
 
-## Features in Detail
+Every website you monitor is saved automatically. No need to remember settings!
 
-### Smart Change Detection
+## ⚙️ Configuration Options (Optional)
 
-The system offers three comparison modes to suit different monitoring needs:
+These are **optional** - the defaults work great! But if you want more control:
 
-1. **Text Mode** (Default): Perfect for monitoring content changes while ignoring cosmetic updates
-2. **HTML Mode**: Detects any structural changes in the page
-3. **Hash Mode**: Ultra-fast comparison for detecting any changes
+### Detection Modes
 
-### Monitoring Options
+Choose how to detect changes (default is "text" - recommended for most users):
 
-- **Full Page Monitoring**: Leave CSS selector empty to monitor entire page
-- **Element-Specific**: Use CSS selectors to focus on specific elements
-- **Adjustable Intervals**: Set check frequency from 1 second to hours
-- **Timeout Control**: Configure request timeout for slow-loading pages
+- **Text Mode** ⭐ (Recommended)
+  - Watches the actual words on the page
+  - Ignores design changes, ads, and timestamps
+  - Perfect for: prices, availability, news articles
 
-### Alert System
+- **HTML Mode**
+  - Watches everything including page structure
+  - Detects even tiny changes
+  - Perfect for: complete page monitoring
 
-- **Sound Alerts**: Plays sound when changes detected
-- **Custom Sounds**: Use your own WAV files
-- **Test Function**: Preview alert sound before monitoring
-- **Visual Feedback**: Status updates and activity logs
+- **Hash Mode**
+  - Super fast checking
+  - Detects any change at all
+  - Perfect for: frequent checks, simple pages
 
-### Status Tracking
+### Check Interval
 
-- Current monitoring status
-- Last check timestamp
-- Next check countdown
+How often to check the website:
+- **Quick checks**: 5-10 seconds (careful - don't overload websites!)
+- **Normal**: 60 seconds (1 minute) - good default
+- **Relaxed**: 300 seconds (5 minutes) or more
+
+**Tip**: Start with 60 seconds and adjust based on how often the site changes.
+
+### CSS Selectors (Advanced)
+
+Want to watch just part of a page? Use CSS selectors:
+- **Leave empty** - Watch the whole page (easiest!)
+- **`#price`** - Watch the price element
+- **`.stock-status`** - Watch stock availability
+- **`h1.title`** - Watch the page title
+
+**Don't know CSS?** No problem! Just leave it empty to watch everything.
+
+### Custom Alert Sounds
+
+Don't like the default beep?
+1. Click "Browse" next to Alert Sound
+2. Pick your own WAV sound file
+3. Or leave default for the built-in alert
+
+## 🎨 Themes
+
+Change the app's appearance to match your preference:
+
+1. Click **View** in the menu bar
+2. Choose **Theme**:
+   - **☀️ Light** - Bright, clean look
+   - **🌙 Dark** - Easy on the eyes
+   - **💻 System** - Matches your computer's theme
+
+Your choice is saved automatically!
+
+## 📂 Where Things Are Saved
+
+All your data is stored locally on your computer:
+
+- **Monitoring settings**: Saved in `web_alert_store.db`
+- **Activity logs**: Saved with each monitor
+- **Theme preference**: Remembered automatically
+- **Alert sound**: Stored in `sounds/` folder
+
+**Nothing is sent to the internet** - everything stays on your computer!
+
+## 💡 What Can I Use This For?
+
+Here are some real-world examples:
+
+### Shopping & Deals
+- 🛒 **Track product availability**: Know the moment that sold-out item is back in stock
+- 💰 **Watch prices**: Get notified when your favorite product goes on sale
+- 🎁 **Monitor deals**: Catch limited-time offers before they expire
+
+### Career & Education
+- 💼 **Job postings**: Be the first to apply when a new position opens
+- 📚 **University admissions**: Know when results or announcements are posted
+- 🏫 **Course registration**: Get alerts when spots open up
+
+### News & Information
+- 📰 **Breaking news**: Track updates on topics you care about
+- 🏛️ **Government updates**: Monitor official documents or announcements
+- 🏆 **Sports scores**: Track game results or league standings
+
+### Personal Projects
+- 🎮 **Game servers**: Check if your favorite server is online
+- 📱 **App updates**: Know when a new version is released
+- 🌐 **Website changes**: Track updates to any webpage you're interested in
+
+**The possibilities are endless!** If it's on the web, you can monitor it.
 - Total changes detected
 - Total alerts played
 - Active URL being monitored
@@ -155,50 +225,101 @@ The system offers three comparison modes to suit different monitoring needs:
 - **API Status Pages**: Monitor service status dashboards
 - **Competition Tracking**: Watch competitor website updates
 
-## Tips
+## 💭 Helpful Tips
 
-1. **Start with longer intervals** (60+ seconds) to avoid overwhelming the target server
-2. **Use CSS selectors** to monitor specific elements and reduce false positives
-3. **Test your alert sound** before starting long monitoring sessions
-4. **Save configurations** for frequently monitored sites
-5. **Use text mode** to ignore dynamic ads and timestamps
+### For Best Results:
+1. ⏱️ **Start with 60 seconds** - Don't check too often or websites might block you
+2. 🎯 **Watch specific parts** - Use CSS selectors to avoid false alarms from ads
+3. 🔊 **Test your alert** - Click "Test Sound" before you start monitoring
+4. 💾 **Use History** - Save configs for websites you check often
+5. 📝 **Use Text mode** - Ignores changing ads and timestamps
 
-## Requirements
+### Being a Good Internet Citizen:
+- Don't set intervals too short (under 30 seconds)
+- Respect websites by not overloading them
+- Some websites might block frequent checks
 
-- Python 3.8 or higher
-- Windows (uses winsound for alerts)
-- Internet connection
+## 📋 System Requirements
 
-## Troubleshooting
+To run this app, you need:
+- **Operating System**: Windows (7, 10, or 11)
+- **Python**: Version 3.8 or newer
+- **Internet**: Active connection to check websites
+- **Sound**: Speakers or headphones for alerts
 
-**No sound playing?**
-- Check that your sound entry is correct or leave empty for system default
-- Test the alert sound using the "Test" button
-- Ensure your system volume is not muted
+## 🆘 Common Issues & Solutions
 
-**Changes not detected?**
-- Try different comparison modes
-- Check if the website loads correctly in your browser
-- Verify the CSS selector matches existing elements
-- Increase check interval if the site is slow to load
+### "I'm not hearing any alerts!"
+**Solutions:**
+- ✅ Make sure your computer sound is turned on
+- ✅ Click the "Test Sound" button to check if it works
+- ✅ Try using the default alert (leave sound path empty)
+- ✅ Check if your speakers/headphones are connected
 
-**High false positives?**
-- Use CSS selectors to target specific content
-- Switch to "text" mode to ignore formatting changes
-- Increase the check interval
+### "It keeps alerting but nothing changed!"
+**Solutions:**
+- ✅ Switch to **Text Mode** (ignores ads and animations)
+- ✅ Use a CSS selector to watch just the part you care about
+- ✅ Some websites have timestamps that change constantly
 
-## License
+### "It's not detecting any changes!"
+**Solutions:**
+- ✅ Check if the website opens in your web browser
+- ✅ Try increasing the check interval (60 seconds)
+- ✅ Make sure your CSS selector is correct (or leave it empty)
+- ✅ Try switching to **HTML Mode** for more sensitive detection
 
-MIT License - Feel free to use and modify as needed.
+### "The app won't start!"
+**Solutions:**
+- ✅ Make sure Python is installed correctly
+- ✅ Run `uv sync` again to install dependencies
+- ✅ Check if your antivirus is blocking it
 
-## Contributing
+### "I get an error about Python not found"
+**Solutions:**
+- ✅ Reinstall Python from python.org
+- ✅ During installation, check "Add Python to PATH"
+- ✅ Restart your computer after installing
 
-Contributions are welcome! Feel free to submit issues or pull requests.
+### Still Having Problems?
+Open an issue on GitHub with:
+- What you were trying to do
+- The exact error message
+- Screenshots if possible
 
-## Author
+## 🤝 Want to Help Improve This App?
 
-Created with ❤️ for web monitoring enthusiasts
+Found a bug? Have an idea for a new feature? Contributions are welcome!
+
+- **Report bugs**: Open an issue on GitHub
+- **Suggest features**: Tell us what you'd like to see
+- **Improve code**: Submit a pull request
+- **Share feedback**: Let us know how you're using it!
+
+## 📄 License
+
+MIT License - Free to use, modify, and share!
+
+## ⚠️ Important Reminder
+
+**Be Respectful:**
+- Don't check websites too frequently (use 30+ second intervals)
+- Respect website terms of service
+- Excessive requests may get you blocked
+- Use this tool responsibly!
 
 ---
 
-**Note**: Please be respectful of website bandwidth and use reasonable check intervals. Excessive requests may be considered abuse.
+## 👨‍💻 About
+
+Created with ❤️ for anyone who needs to track website changes without constantly refreshing their browser.
+
+**Made possible by**: Python, CustomTkinter, and coffee ☕
+
+---
+
+### Ready to Start?
+1. Follow the installation steps above
+2. Run the app
+3. Add your first monitor
+4. Sit back and let it watch for you! 🎉
