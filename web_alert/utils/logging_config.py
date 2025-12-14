@@ -15,4 +15,7 @@ def setup_logging():
         handlers=[logging.FileHandler("logs/web_alert.log"), logging.StreamHandler()],
     )
 
+    # Suppress verbose comtypes logging (used by pyttsx3 on Windows)
+    logging.getLogger("comtypes").setLevel(logging.WARNING)
+
     return logging.getLogger(__name__)
