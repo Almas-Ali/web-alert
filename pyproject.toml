@@ -1,9 +1,44 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "web-alert"
 version = "1.0.0"
-description = "Modern web monitoring and alert system with GUI"
+description = "Modern web monitoring and alert system with customizable GUI for tracking website changes"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Md. Almas Ali", email = "almaspr3@gmail.com"},
+]
+maintainers = [
+    {name = "Md. Almas Ali", email = "almaspr3@gmail.com"},
+]
+keywords = [
+    "web-monitoring",
+    "website-tracker",
+    "change-detection",
+    "alert-system",
+    "web-scraper",
+    "gui",
+    "customtkinter",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: System :: Monitoring",
+    "Topic :: Utilities",
+]
 dependencies = [
     "customtkinter>=5.2.0",
     "requests>=2.31.0",
@@ -12,5 +47,22 @@ dependencies = [
     "sqlalchemy>=2.0.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/Almas-Ali/web-alert"
+Repository = "https://github.com/Almas-Ali/web-alert"
+Issues = "https://github.com/Almas-Ali/web-alert/issues"
+Documentation = "https://github.com/Almas-Ali/web-alert#readme"
+
 [project.scripts]
-web-alert = "web_alert.gui:main"
+web-alert = "web_alert.dashboard:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["web_alert"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/web_alert",
+    "/sounds",
+    "/README.md",
+    "/LICENSE",
+]
