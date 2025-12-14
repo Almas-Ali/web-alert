@@ -1,5 +1,6 @@
 """Streamlined dashboard using modular components."""
 
+import sys
 import time
 import tkinter as tk
 from pathlib import Path
@@ -8,12 +9,49 @@ from tkinter import messagebox
 import customtkinter as ctk
 
 from .. import __version__
+
+
+class ToolTip:
+    """Simple tooltip for CTk widgets."""
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+        self.tooltip = None
+        widget.bind("<Enter>", self.show_tooltip)
+        widget.bind("<Leave>", self.hide_tooltip)
+    
+    def show_tooltip(self, event=None):
+        if self.tooltip:
+            return
+        x = self.widget.winfo_rootx() + 20
+        y = self.widget.winfo_rooty() + self.widget.winfo_height() + 5
+        self.tooltip = tk.Toplevel(self.widget)
+        self.tooltip.wm_overrideredirect(True)
+        self.tooltip.wm_geometry(f"+{x}+{y}")
+        label = tk.Label(
+            self.tooltip, 
+            text=self.text, 
+            background="#2C3E50",
+            foreground="white",
+            relief="solid",
+            borderwidth=1,
+            font=("Arial", 9),
+            padx=8,
+            pady=4
+        )
+        label.pack()
+    
+    def hide_tooltip(self, event=None):
+        if self.tooltip:
+            self.tooltip.destroy()
+            self.tooltip = None
 from ..config import ConfigManager
 from ..core import MonitorJob
 from ..data import ConfigDatabase
 from ..services import HistoryManager, JobManager, ThemeManager
 from ..utils import center_window, setup_logging
 from .add_job_dialog import AddJobDialog
+from .edit_job_dialog import EditJobDialog
 from .job_log_viewer import JobLogViewer
 
 logger = setup_logging()
@@ -46,6 +84,11 @@ class WebAlertDashboard:
         self.root.title("Web Alert")
         self.root.geometry("700x700")
         self.root.resizable(True, True)
+
+        # Set window icon
+        icon_path = Path(__file__).parent.parent / "icons" / "icon.ico"
+        if icon_path.exists():
+            self.root.iconbitmap(str(icon_path))
 
         # Center window
         center_window(self.root, 700, 700)
@@ -278,8 +321,7 @@ class WebAlertDashboard:
 
         if saved_jobs:
             # Hide empty state when loading saved jobs
-            if self.empty_container.winfo_viewable():
-                self.empty_container.pack_forget()
+            self.empty_container.pack_forget()
 
             for job_data in saved_jobs:
                 job_id, job = self.job_manager.create_job(job_data, saved=True)
@@ -294,9 +336,8 @@ class WebAlertDashboard:
         job_id, job = self.job_manager.create_job(config)
         self._create_job_widget(job)
 
-        # Hide empty state if visible
-        if self.empty_container.winfo_viewable():
-            self.empty_container.pack_forget()
+        # Hide empty state
+        self.empty_container.pack_forget()
 
     def _create_job_widget(self, job: MonitorJob):
         """Create widget for a monitoring job."""
@@ -384,62 +425,88 @@ class WebAlertDashboard:
         status_label.pack(fill="x")
         job.status_label = status_label
 
-        # Controls
+        # Controls - compact layout
         control_frame = ctk.CTkFrame(job_frame, fg_color="transparent")
         control_frame.pack(side="right", padx=8, pady=8)
 
+        # Primary control row (Start/Stop)
+        primary_row = ctk.CTkFrame(control_frame, fg_color="transparent")
+        primary_row.pack(pady=(0, 4))
+
         start_btn = ctk.CTkButton(
-            control_frame,
+            primary_row,
             text="▶ Start",
             command=lambda: self._start_job(job.id),
-            width=80,
-            height=28,
+            width=70,
+            height=32,
             font=ctk.CTkFont(size=11, weight="bold"),
             fg_color=self.colors["success"],
             hover_color=self.colors["hover_success"],
-            corner_radius=8,
+            corner_radius=6,
         )
-        start_btn.pack(pady=2)
+        start_btn.pack(side="left", padx=2)
         job.start_button = start_btn
 
         stop_btn = ctk.CTkButton(
-            control_frame,
+            primary_row,
             text="⏸ Stop",
             command=lambda: self._stop_job(job.id),
-            width=80,
-            height=28,
+            width=70,
+            height=32,
             font=ctk.CTkFont(size=11, weight="bold"),
             fg_color=self.colors["danger"],
             hover_color=self.colors["hover_danger"],
-            corner_radius=8,
+            corner_radius=6,
             state="disabled",
         )
-        stop_btn.pack(pady=2)
+        stop_btn.pack(side="left", padx=2)
         job.stop_button = stop_btn
 
-        ctk.CTkButton(
-            control_frame,
-            text="📋 Logs",
+        # Secondary controls row (Logs, Edit, Remove)
+        secondary_row = ctk.CTkFrame(control_frame, fg_color="transparent")
+        secondary_row.pack()
+
+        logs_btn = ctk.CTkButton(
+            secondary_row,
+            text="📋",
             command=lambda: self._view_job_logs(job.id),
-            width=80,
+            width=45,
             height=28,
-            font=ctk.CTkFont(size=11, weight="bold"),
+            font=ctk.CTkFont(size=14),
             fg_color=self.colors["info"],
             hover_color=self.colors["hover_info"],
-            corner_radius=8,
-        ).pack(pady=2)
+            corner_radius=6,
+        )
+        logs_btn.pack(side="left", padx=2)
+        ToolTip(logs_btn, "View Logs")
 
-        ctk.CTkButton(
-            control_frame,
-            text="🗑 Remove",
-            command=lambda: self._remove_job(job.id),
-            width=80,
+        edit_btn = ctk.CTkButton(
+            secondary_row,
+            text="✏️",
+            command=lambda: self._edit_job(job.id),
+            width=45,
             height=28,
-            font=ctk.CTkFont(size=11),
-            fg_color=("gray75", "gray30"),
-            hover_color=("gray65", "gray35"),
-            corner_radius=8,
-        ).pack(pady=2)
+            font=ctk.CTkFont(size=14),
+            fg_color=self.colors["secondary"],
+            hover_color=self.colors["hover_primary"],
+            corner_radius=6,
+        )
+        edit_btn.pack(side="left", padx=2)
+        ToolTip(edit_btn, "Edit Job")
+
+        remove_btn = ctk.CTkButton(
+            secondary_row,
+            text="🗑️",
+            command=lambda: self._remove_job(job.id),
+            width=45,
+            height=28,
+            font=ctk.CTkFont(size=14),
+            fg_color="#EF4444",
+            hover_color="#DC2626",
+            corner_radius=6,
+        )
+        remove_btn.pack(side="left", padx=2)
+        ToolTip(remove_btn, "Remove Job")
 
     def _start_job(self, job_id: str):
         """Start monitoring a specific job."""
@@ -462,6 +529,47 @@ class WebAlertDashboard:
         job.start_button.configure(state="normal")
         job.stop_button.configure(state="disabled")
         self._update_job_status(job_id)
+
+    def _edit_job(self, job_id: str):
+        """Edit a monitoring job configuration."""
+        job = self.job_manager.get_job(job_id)
+        if not job:
+            return
+
+        if job.is_running:
+            messagebox.showwarning(
+                "Job Running",
+                "Please stop the job before editing its configuration."
+            )
+            return
+
+        # Create edit dialog with pre-filled values
+        EditJobDialog(self.root, self.db, job, self._update_job_from_dialog)
+
+    def _update_job_from_dialog(self, job_id: str, config: dict):
+        """Update a job from edit dialog configuration."""
+        job = self.job_manager.get_job(job_id)
+        if not job:
+            return
+
+        # Update job configuration
+        job.url = config["url"]
+        job.selector = config.get("selector", "")
+        job.check_interval = config["check_interval"]
+        job.comparison_mode = config["comparison_mode"]
+        job.alert_sound = config.get("alert_sound", "")
+        job.tts_message = config.get("tts_message", "")
+        job.timeout = config.get("timeout", 10)
+
+        # Update database
+        job_data = job.to_dict()
+        self.db.save_active_job(job_data)
+
+        # Refresh the job widget
+        job.widget.destroy()
+        self._create_job_widget(job)
+
+        logger.info(f"Updated job {job_id} configuration")
 
     def _remove_job(self, job_id: str):
         """Remove a monitoring job."""
@@ -520,13 +628,13 @@ class WebAlertDashboard:
                 else:
                     job.add_log("❌ Failed to fetch content")
 
-                # Wait for next check
-                for i in range(job.check_interval):
-                    if not job.is_running:
-                        break
-                    if i == 0:
+                # Wait for next check - use shorter sleeps for faster shutdown
+                remaining = job.check_interval
+                while remaining > 0 and job.is_running:
+                    if remaining == job.check_interval:
                         job.add_log(f"Next check in {job.check_interval} seconds...")
-                    time.sleep(1)
+                    time.sleep(min(0.5, remaining))  # Sleep in 0.5s chunks for faster response
+                    remaining -= 0.5
 
             except Exception as e:
                 error_msg = f"❌ Error: {str(e)}"
@@ -685,18 +793,56 @@ Copyright © 2025. All rights reserved.
 
     def _on_closing(self):
         """Handle window close event."""
+        self._force_quit()
+
+    def _force_quit(self):
+        """Force quit the application."""
+        logger.info("Force quit initiated")
         jobs = self.job_manager.get_all_jobs()
         running_jobs = [j for j in jobs.values() if j.is_running]
 
+        should_quit = True
         if running_jobs:
-            if messagebox.askokcancel(
+            should_quit = messagebox.askokcancel(
                 "Quit", f"{len(running_jobs)} job(s) are running. Stop all and quit?"
-            ):
-                self.job_manager.stop_all_jobs()
-                time.sleep(0.5)
+            )
+        
+        if should_quit:
+            logger.info("Shutting down application...")
+            
+            # Stop all jobs and WAIT for threads to finish
+            try:
+                logger.info("Stopping all monitoring jobs...")
+                self.job_manager.stop_all_jobs(wait=True, timeout=3.0)
+                logger.info("All jobs stopped")
+            except Exception as e:
+                logger.error(f"Error stopping jobs: {e}")
+            
+            # Close database session properly
+            try:
+                logger.info("Closing database...")
+                if hasattr(self.db, 'session') and self.db.session:
+                    self.db.session.close()
+                logger.info("Database closed successfully")
+            except Exception as e:
+                logger.error(f"Error closing db: {e}")
+            
+            logger.info("Cleanup complete, exiting...")
+            
+            # Destroy window and exit normally
+            try:
+                self.root.quit()
+            except Exception as e:
+                logger.error(f"Error calling root.quit: {e}")
+            
+            try:
                 self.root.destroy()
-        else:
-            self.root.destroy()
+            except Exception as e:
+                logger.error(f"Error calling root.destroy: {e}")
+            
+            # Exit cleanly - allow Python cleanup
+            logger.info("Application exit complete")
+            sys.exit(0)
 
     def run(self):
         """Run the application."""
