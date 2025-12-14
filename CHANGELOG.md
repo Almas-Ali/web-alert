@@ -8,25 +8,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2025-12-15
 
 ### Added
-- **Text-to-Speech Alerts (#2)**: Users can now add custom text messages that will be spoken when changes are detected
-  - New "Text-to-Speech Message" field in Add Job dialog
-  - Messages are spoken using the system's text-to-speech engine (pyttsx3)
-  - Works alongside existing sound alerts
-  - Messages are saved and persisted with job configurations
-  - Added `pyttsx3>=2.90` dependency
+- **Job Editing Functionality**: Edit existing job configurations without recreating them
+  - New "✏️ Edit" button in job control panel
+  - Edit dialog pre-fills all current job settings
+  - Can modify URL, selector, interval, mode, sound, TTS message, and notes
+  - Jobs must be stopped before editing
+  - Changes are saved to database and UI updates automatically
+- **Text-to-Speech Alerts (#2)**: Custom spoken messages when changes are detected
+  - New "Text-to-Speech Message" field in Add/Edit Job dialogs
+  - Messages spoken using system's text-to-speech engine (pyttsx3)
+  - TTS and sound alerts are mutually exclusive (prevents audio overlap)
+  - Messages saved and persisted with job configurations
+  - Added `pyttsx3>=2.90` and `pywin32>=306` dependencies
+- **Custom Application Icon**: Purple bell icon with red notification dot
+  - Custom branding for window title bar and taskbar
+  - Professional appearance with consistent design
+  - Icon generation script included (`create_icon.py`)
+  - Added `pillow>=10.0.0` dependency
+- **Smart Sound File Browser**: Improved UX for selecting alert sounds
+  - Opens in `web_alert/sounds` folder by default when field is empty
+  - Opens in current file's directory when path exists
+  - Provides better browsing experience
+- **Interactive Tooltips**: Helpful hints on hover for icon buttons
+  - Tooltip class for better user guidance
+  - "View Logs", "Edit Job", "Remove Job" tooltips
+- **Auto-Discovery Migration System**: Flexible database schema updates
+  - Migrations auto-load from `migrations/versions/` folder
+  - No hardcoded migration references needed
+  - Migration 001: Added `tts_message` field to database
 
 ### Changed
-- Updated database schema to include `tts_message` field in Configuration and ActiveJob models
-- Enhanced Alerter class to support both sound and TTS alerts
-- Improved Add Job Dialog UI with new TTS message field and helpful info text
-- Version bumped to 1.1.0
+- **TTS and Sound Alerts**: Now mutually exclusive to prevent audio overlap
+  - If TTS message configured: Only TTS plays (no sound)
+  - If no TTS message: Sound plays instead
+- **Button Layout**: Reorganized job controls into compact 2-row layout
+  - Start/Stop buttons (70px) in top row
+  - Logs/Edit/Remove as icon buttons (45px) in bottom row
+  - Remove button now red (#EF4444) for better visibility
+- **Dialog Heights**: Increased Add/Edit Job dialog to 700px
+- **Database Schema**: Added `tts_message` field to Configuration and ActiveJob models
+- **Empty State Visibility**: Removed unreliable `winfo_viewable()` checks
+- Updated database models to support TTS messages
+- Enhanced Alerter class with TTS support and COM initialization for Windows
+- Improved Add/Edit Job Dialog UI with TTS fields
+
+### Fixed
+- Fixed Tkinter error when job fields contain None values
+- Fixed database session close error on application exit
+- Fixed blank space in main monitoring area when jobs exist
+- Fixed TTS threading issues with COM initialization and global lock
 
 ### Technical Details
-- Added TTS functionality to `web_alert/core/alerter.py`
-- Updated `web_alert/core/monitor_job.py` to include `tts_message` field
-- Modified database models: `Configuration` and `ActiveJob`
-- Updated `web_alert/ui/add_job_dialog.py` with TTS input field
-- Enhanced dialog window height to 650px to accommodate new field
+- New file: `web_alert/ui/edit_job_dialog.py` - Full job editing dialog
+- New file: `web_alert/migrations/migration_manager.py` - Auto-discovery system
+- New file: `create_icon.py` - Icon generation script
+- New files: `web_alert/icons/icon.png` and `icon.ico` - Application icons
+- Modified: `web_alert/core/alerter.py` - TTS support with threading
+- Modified: `web_alert/core/monitor_job.py` - Added `tts_message` field
+- Modified: `web_alert/ui/dashboard.py` - Edit functionality, tooltips, button layout
+- Modified: `web_alert/ui/add_job_dialog.py` - TTS field, smart file browser
+- Modified: `web_alert/data/database.py` - Migration auto-discovery
+- Modified database models: `Configuration` and `ActiveJob` with `tts_message`
 
 ## [1.0.2] - 2025-12-15
 
